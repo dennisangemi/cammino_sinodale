@@ -1,0 +1,1 @@
+Il documento di sintesi del cammino sinodale italiano in versione navigabile con i voti della terza assemblea.
