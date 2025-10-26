@@ -593,8 +593,7 @@ footer.full-width {
     .vote-info {
         flex-wrap: wrap;
         gap: 0.75rem;
-        padding: 0 0 0.5rem 0;
-        padding-top: 1.5rem;
+        padding: 0.5rem 0;
         font-size: 0.75rem;
     }
 
