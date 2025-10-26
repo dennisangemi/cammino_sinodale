@@ -571,11 +571,11 @@ footer.full-width {
 
 @media (max-width: 768px) {
     main {
-        padding: 1.5rem;
+        padding: 0.75rem;
     }
 
     #markdown-content {
-        padding: 1.5rem;
+        padding: 1rem;
     }
 
     h1 {
