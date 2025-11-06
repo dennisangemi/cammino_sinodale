@@ -359,8 +359,8 @@ ul li::marker {
 
 /* Voting Charts */
 .vote-chart-container {
-    margin: 1.5rem 0;
-    padding: 1.25rem;
+    margin: 0 0 2.5rem 0;
+    padding: 0 1.25rem 1.25rem 1.25rem;
     background: var(--bg-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -426,8 +426,8 @@ div[id^="vote-"] {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    margin: 0 0 0.75rem 0;
-    padding: 0 0 0.75rem 0;
+    margin: 0;
+    padding: 1.25rem 0 0.75rem 0;
     background: transparent;
     border-bottom: 1px solid var(--border-color);
     font-size: 0.8125rem;
@@ -458,12 +458,16 @@ div[id^="vote-"] {
     background: linear-gradient(135deg, rgba(168, 17, 39, 0.95), rgba(168, 17, 39, 0.85));
     color: white;
     border: 1px solid rgba(168, 17, 39, 0.3);
+    font-size: 1.1rem;
+    padding: 0.3rem 0.6rem;
 }
 
 .vote-tag.tag-mediamente-controverso {
     background: linear-gradient(135deg, rgba(247, 166, 0, 0.95), rgba(247, 166, 0, 0.85));
     color: white;
     border: 1px solid rgba(247, 166, 0, 0.3);
+    font-size: 1.1rem;
+    padding: 0.3rem 0.6rem;
 }
 
 .vote-info-item {

@@ -195,6 +195,10 @@ function insertGeneralVoteCharts() {
             const voteInfo = document.createElement('div');
             voteInfo.className = 'vote-info';
             voteInfo.style.paddingBottom = '0.75rem';
+            
+            const percentFavorevoli = (voto.favorevoli / voto.votanti * 100).toFixed(1);
+            const percentContrari = (voto.non_favorevoli / voto.votanti * 100).toFixed(1);
+            
             voteInfo.innerHTML = `
                 <div class="vote-info-item">
                     <span class="vote-label">Votanti:</span>
@@ -202,11 +206,11 @@ function insertGeneralVoteCharts() {
                 </div>
                 <div class="vote-info-item favorevoli">
                     <span class="vote-label">Favorevoli:</span>
-                    <span class="vote-value">${voto.favorevoli}</span>
+                    <span class="vote-value">${voto.favorevoli} <span class="vote-label">(${percentFavorevoli}%)</span></span>
                 </div>
                 <div class="vote-info-item contrari">
                     <span class="vote-label">Contrari:</span>
-                    <span class="vote-value">${voto.non_favorevoli}</span>
+                    <span class="vote-value">${voto.non_favorevoli} <span class="vote-label">(${percentContrari}%)</span></span>
                 </div>
             `;
             
@@ -238,29 +242,25 @@ function insertVoteCharts() {
             const chartContainer = document.createElement('div');
             chartContainer.className = 'vote-chart-container';
             
-            // Aggiungi tag se presente
-            let tagHtml = '';
-            if (voto.tag) {
-                const tagClass = voto.tag === 'molto controverso' ? 'tag-molto-controverso' : 'tag-mediamente-controverso';
-                tagHtml = `<span class="vote-tag ${tagClass}">${voto.tag}</span>`;
-            }
-            
             // Info votazioni (compatte)
             const voteInfo = document.createElement('div');
             voteInfo.className = 'vote-info';
+            
+            const percentFavorevoli = (voto.favorevoli / voto.votanti * 100).toFixed(1);
+            const percentContrari = (voto.non_favorevoli / voto.votanti * 100).toFixed(1);
+            
             voteInfo.innerHTML = `
-                ${tagHtml}
                 <div class="vote-info-item">
                     <span class="vote-label">Votanti:</span>
                     <span class="vote-value">${voto.votanti}</span>
                 </div>
                 <div class="vote-info-item favorevoli">
                     <span class="vote-label">Favorevoli:</span>
-                    <span class="vote-value">${voto.favorevoli}</span>
+                    <span class="vote-value">${voto.favorevoli} <span class="vote-label">(${percentFavorevoli}%)</span></span>
                 </div>
                 <div class="vote-info-item contrari">
                     <span class="vote-label">Contrari:</span>
-                    <span class="vote-value">${voto.non_favorevoli}</span>
+                    <span class="vote-value">${voto.non_favorevoli} <span class="vote-label">(${percentContrari}%)</span></span>
                 </div>
             `;
             
