@@ -1,50 +1,27 @@
-// Carica e renderizza il documento markdown
-async function loadMarkdown() {
-    try {
-        const response = await fetch('docs/documento_sintesi.md');
-        const markdown = await response.text();
+// Inizializza il documento (il contenuto HTML è già presente nella pagina)
+function loadMarkdown() {
+    // Usa requestAnimationFrame per distribuire il carico di lavoro
+    requestAnimationFrame(() => {
+        // Genera l'indice
+        generateTOC();
         
-        // Converti markdown in HTML
-        const html = marked.parse(markdown);
+        // Aggiungi smooth scrolling ai link dell'indice
+        addSmoothScrolling();
         
-        // Inserisci nel contenitore
-        document.getElementById('markdown-content').innerHTML = html;
+        // Aggiungi listener per chiudere TOC su mobile
+        addTocCloseBehavior();
         
-        // Usa requestAnimationFrame per distribuire il carico di lavoro
-        await new Promise(resolve => {
-            requestAnimationFrame(() => {
-                // Genera l'indice
-                generateTOC();
-                
-                // Aggiungi smooth scrolling ai link dell'indice
-                addSmoothScrolling();
-                
-                // Aggiungi listener per chiudere TOC su mobile
-                addTocCloseBehavior();
-                resolve();
-            });
+        // Inserisci i grafici in modo asincrono
+        requestAnimationFrame(() => {
+            insertVoteCharts();
+            insertGeneralVoteCharts();
+            
+            // Gestisci l'anchor nella URL dopo che tutto è renderizzato
+            setTimeout(() => {
+                handleUrlAnchor();
+            }, 100);
         });
-        
-        // Inserisci i grafici in modo asincrono dopo che tutto è renderizzato
-        await new Promise(resolve => {
-            requestAnimationFrame(() => {
-                insertVoteCharts();
-                insertGeneralVoteCharts();
-                resolve();
-            });
-        });
-        
-        // Gestisci l'anchor nella URL solo dopo che tutto è completamente caricato
-        // Usa un delay più lungo per assicurarsi che il DOM sia stabile
-        setTimeout(() => {
-            handleUrlAnchor();
-        }, 500);
-        
-    } catch (error) {
-        console.error('Errore nel caricamento del documento:', error);
-        document.getElementById('markdown-content').innerHTML = 
-            '<p style="color: red;">Errore nel caricamento del documento.</p>';
-    }
+    });
 }
 
 // Genera l'indice automaticamente
