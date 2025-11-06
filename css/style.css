@@ -647,6 +647,20 @@ footer.full-width {
     }
 }
 
+/* Evidenziazione temporanea per elementi linkati - leggera e veloce */
+.highlight-target {
+    animation: highlightFade 1.5s ease-out;
+}
+
+@keyframes highlightFade {
+    0% {
+        background-color: rgba(168, 17, 39, 0.12);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
 /* Print Styles */
 @media print {
     .toc, #navbar, #toggle-toc, footer {

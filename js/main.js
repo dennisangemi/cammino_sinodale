@@ -63,20 +63,22 @@ function generateTOC() {
                 break;
             }
             
-            // Cerca paragrafi che iniziano con un numero seguito da un punto
-            if (nextElement.tagName === 'P') {
-                const text = nextElement.textContent.trim();
-                const puntoMatch = text.match(/^(\d+)\.\s/);
-                if (puntoMatch) {
-                    const puntoNumero = puntoMatch[1];
+            // Cerca liste ordinate di tipo "1" (numerate)
+            if (nextElement.tagName === 'OL' && nextElement.getAttribute('type') === '1') {
+                const startValue = parseInt(nextElement.getAttribute('start')) || 1;
+                const listItems = nextElement.querySelectorAll(':scope > li');
+                
+                listItems.forEach((item, index) => {
+                    const puntoNumero = startValue + index;
                     
                     // Evita duplicati
                     if (!foundPunti.includes(puntoNumero)) {
                         foundPunti.push(puntoNumero);
                         
-                        // Crea un ID per questo paragrafo se non esiste
-                        if (!nextElement.id) {
-                            nextElement.id = `punto-${puntoNumero}`;
+                        // Crea un ID per questo elemento se non esiste
+                        const itemId = `punto-${puntoNumero}`;
+                        if (!item.id) {
+                            item.id = itemId;
                         }
                         
                         // Aggiungi all'indice
@@ -84,12 +86,12 @@ function generateTOC() {
                         const liPunto = document.createElement('li');
                         liPunto.className = `${tocLevel} toc-list-item`;
                         const aPunto = document.createElement('a');
-                        aPunto.href = `#${nextElement.id}`;
+                        aPunto.href = `#${itemId}`;
                         aPunto.textContent = `Punto ${puntoNumero}`;
                         liPunto.appendChild(aPunto);
                         ul.appendChild(liPunto);
                     }
-                }
+                });
             }
             
             nextElement = nextElement.nextElementSibling;
@@ -107,15 +109,26 @@ function generateTOC() {
 // Aggiungi link anchor agli elementi delle liste numerate
 function addListItemAnchors() {
     const content = document.getElementById('markdown-content');
-    const listItems = content.querySelectorAll('ol > li');
+    const orderedLists = content.querySelectorAll('ol[type="1"]');
     
-    listItems.forEach((item, index) => {
-        // Genera un ID unico basato sul contenuto o posizione
-        const id = `punto-${index + 1}`;
-        item.id = id;
+    orderedLists.forEach(ol => {
+        // Ottieni il valore iniziale dalla lista (attributo start)
+        const startValue = parseInt(ol.getAttribute('start')) || 1;
+        const listItems = ol.querySelectorAll(':scope > li');
         
-        // Aggiungi il link anchor
-        addAnchorLink(item, id);
+        listItems.forEach((item, index) => {
+            // Calcola il numero effettivo del punto
+            const puntoNumero = startValue + index;
+            const id = `punto-${puntoNumero}`;
+            
+            // Assegna l'ID solo se non esiste già
+            if (!item.id) {
+                item.id = id;
+            }
+            
+            // Aggiungi il link anchor
+            addAnchorLink(item, id);
+        });
     });
 }
 
@@ -297,20 +310,57 @@ function createSimpleBarChart(voto) {
     `;
 }
 
-// Aggiungi smooth scrolling
+// Aggiungi smooth scrolling ottimizzato
 function addSmoothScrolling() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const targetId = this.getAttribute('href').substring(1);
+            const target = document.getElementById(targetId);
+            
             if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                scrollToElement(target);
             }
         });
     });
+}
+
+// Funzione centralizzata per lo scroll ottimizzato
+function scrollToElement(element) {
+    // Calcola l'offset necessario per l'header fisso
+    const headerHeight = document.getElementById('navbar')?.offsetHeight || 60;
+    const offset = headerHeight + 20;
+    
+    // Posizione target
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - offset;
+    const currentPosition = window.pageYOffset;
+    const distance = Math.abs(offsetPosition - currentPosition);
+    
+    // Scroll istantaneo per distanze brevi, smooth per lunghe
+    // Se la distanza è minore di 800px, usa scroll istantaneo
+    const behavior = distance < 800 ? 'auto' : 'smooth';
+    
+    window.scrollTo({
+        top: offsetPosition,
+        behavior: behavior
+    });
+    
+    // Evidenzia brevemente l'elemento solo per scroll smooth
+    if (behavior === 'smooth') {
+        setTimeout(() => {
+            element.classList.add('highlight-target');
+            setTimeout(() => {
+                element.classList.remove('highlight-target');
+            }, 1500);
+        }, 300);
+    } else {
+        // Per scroll istantaneo, evidenzia subito
+        element.classList.add('highlight-target');
+        setTimeout(() => {
+            element.classList.remove('highlight-target');
+        }, 1500);
+    }
 }
 
 // Aggiungi comportamento di chiusura TOC su mobile
@@ -344,37 +394,14 @@ function handleUrlAnchor() {
     const hash = window.location.hash;
     
     if (hash) {
-        // Rimuovi il # dall'hash
         const targetId = hash.substring(1);
-        console.log('Tentativo di scroll a:', targetId);
-        
         const targetElement = document.getElementById(targetId);
         
         if (targetElement) {
-            console.log('Elemento trovato:', targetId);
-            
-            // Prova prima con scrollIntoView normale
-            try {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-                
-                // Backup: scroll diretto dopo un piccolo delay
-                setTimeout(() => {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 100, // 100px di offset per l'header fisso
-                        behavior: 'smooth'
-                    });
-                }, 100);
-            } catch (e) {
-                console.error('Errore nello scroll:', e);
-                // Fallback: scroll senza smooth
-                window.scrollTo(0, targetElement.offsetTop - 100);
-            }
-        } else {
-            console.warn('Elemento non trovato:', targetId);
-            console.log('Elementi disponibili con ID:', Array.from(document.querySelectorAll('[id]')).map(el => el.id).slice(0, 20));
+            // Usa un piccolo delay per permettere il caricamento completo della pagina
+            setTimeout(() => {
+                scrollToElement(targetElement);
+            }, 100);
         }
     }
 }
@@ -388,10 +415,7 @@ window.addEventListener('hashchange', function() {
         const targetElement = document.getElementById(targetId);
         
         if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+            scrollToElement(targetElement);
         }
     }
 });
