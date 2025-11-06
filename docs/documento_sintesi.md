@@ -8,7 +8,7 @@ TERZA ASSEMBLEA SINODALE DELLE CHIESE IN ITALIA
 
 Documento di sintesi del Cammino sinodale delle Chiese che sono in Italia
 
-Roma · 25 ottobre 2025 • ERGIFE PALACE HOTEL
+Roma · 25 ottobre 2025
 
 </div>
 
